@@ -156,7 +156,7 @@ class Process(object):
         logging.info('Started on {}'.format(self.address))
 
         if self.stop_event:
-            while not self.stop_event.wait(0.00001):
+            while not self.stop_event.wait(0.0000001):
                 self.process()
             self.stop()
         else:
