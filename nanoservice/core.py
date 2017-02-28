@@ -145,7 +145,7 @@ class Endpoint(object):
 
 class Process(object):
     """ A long running process """
-    stop_event = None
+    continue_event = None
 
     def start(self):
         """ Start and listen for calls """
@@ -155,8 +155,8 @@ class Process(object):
 
         logging.info('Started on {}'.format(self.address))
 
-        if self.stop_event:
-            while not self.stop_event.wait(0.0000001):
+        if self.continue_event:
+            while self.continue_event.wait(0.1):
                 self.process()
             self.stop()
         else:
