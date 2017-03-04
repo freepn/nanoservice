@@ -89,12 +89,14 @@ class Responder(Endpoint, Process):
     def process(self):
         """ Receive data from socket and process request """
 
-        response = None
+        responses = None
 
         try:
             payload = self.receive()
-            method, args, ref = self.parse(payload)
-            response = self.execute(method, args, ref)
+            responses = []
+            for request in payload:
+                method, args, ref = self.parse(request)
+                responses.append(self.execute(method, args, ref))
 
         except AuthenticateError as exception:
             logging.error(
@@ -119,8 +121,8 @@ class Responder(Endpoint, Process):
         else:
             logging.debug('Service received payload: {}'.format(payload))
 
-        if response:
-            self.send(response)
+        if responses:
+            self.send(responses)
         else:
             self.send('')
 
@@ -144,7 +146,7 @@ class Requester(Endpoint):
     def build_payload(cls, method, args):
         """ Build the payload to be sent to a `Responder` """
         ref = str(uuid.uuid4())
-        return (method, args, ref)
+        return ([(method, args, ref)])
 
     # pylint: disable=logging-format-interpolation
     def call(self, method, *args):
@@ -155,5 +157,5 @@ class Requester(Endpoint):
         self.send(payload)
 
         res = self.receive()
-        assert payload[2] == res['ref']
-        return res['result'], res['error']
+        assert payload[0][2] == res[0]['ref']
+        return res[0]['result'], res[0]['error']
