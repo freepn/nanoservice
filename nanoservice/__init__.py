@@ -36,7 +36,7 @@ import logging
 
 class Service(Responder):
 
-    def __init__(self, address, encoder=None, authenticator=None,
+    def __init__(self, program, address, encoder=None, authenticator=None,
                  socket=None, bind=True):
         logging.warning('Service is deprecated; use Responder instead.')
         super(Service, self).__init__(

@@ -169,5 +169,10 @@ class Process(object):
             logging.warning('Signal received %s' % (signum,))
             self.continue_event.clear()
         logging.info('Shutting down ...')
+        self.stop_cleanup()
         self.socket.close()
         sys.exit(0)
+
+    def stop_cleanup(self):
+        """ To be overridden """
+        pass
