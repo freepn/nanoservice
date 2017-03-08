@@ -65,7 +65,7 @@ class MsgPackEncoder(Encoder):
         super(MsgPackEncoder, self).__init__()
 
     def encode(self, data):
-        return msgpack.packb(data)
+        return msgpack.packb(data, use_bin_type=True)
 
     def decode(self, data):
         return msgpack.unpackb(data, encoding='utf-8')

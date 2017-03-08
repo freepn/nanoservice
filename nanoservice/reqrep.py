@@ -35,6 +35,28 @@ from .encoder import MsgPackEncoder
 
 from .core import Endpoint
 from .core import Process
+import threading
+import Queue
+
+lock = threading.Lock()
+
+
+class RequestCtx(dict):
+    """ A dot access dictionary for Request """
+
+    def __init__(self, *args, **kwargs):
+        super(RequestCtx, self).__init__(self, *args, **kwargs)
+
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(key)
+
+    def __setattr__(self, key, value):
+        lock.acquire()
+        self[key] = value
+        lock.release()
 
 
 class Responder(Endpoint, Process):
@@ -55,19 +77,33 @@ class Responder(Endpoint, Process):
         self.methods = {}
         self.descriptions = {}
 
-    def execute(self, method, args, ref):
+    def get_cli_session(self, session_uuid, auth_token):
+        """ Overide this method to provide session """
+        raise Exception('Implement this method in your subclass')
+
+    def execute(self, ctx, method, args):
         """ Execute the method with args """
 
-        response = {'result': None, 'error': None, 'ref': ref}
+        result = error = None
         fun = self.methods.get(method)
         if not fun:
-            response['error'] = 'Method `{}` not found'.format(method)
+            error = 'Method `{}` not found'.format(method)
         else:
             try:
-                response['result'] = fun(*args)
+                result = fun(ctx, *args)
             except Exception as exception:
-                logging.error(exception, exc_info=1)
-                response['error'] = str(exception)
+                logging.error(
+                    'Request {} exception {}'.format(ctx.ref, exception), exc_info=1)
+                error = str(exception)
+        response = dict(ref=ctx.ref)
+        if error:
+           response['error'] = error
+        elif result:
+           response['result'] = result
+        if ctx.get('queued'):
+            response['queued'] = True
+        if ctx.get('content_type'):
+            response['content_type'] = ctx.content_type
         return response
 
     def register(self, name, fun, description=None):
@@ -79,44 +115,124 @@ class Responder(Endpoint, Process):
     def parse(cls, payload):
         """ Parse client request """
         try:
-            method, args, ref = payload
+            session = payload['ses']
+            auth_token = payload['tok']
+            method = payload['met']
+            args = payload['arg']
+            ref = payload['ref']
+            version = payload['ver']
         except Exception as exception:
             raise RequestParseError(exception)
         else:
-            return method, args, ref
+            return session, auth_token, method, args, ref, version
 
     # pylint: disable=logging-format-interpolation
     def process(self):
         """ Receive data from socket and process request """
 
         responses = None
+        error_ref = ''
+        error_msg = ''
 
         try:
             payload = self.receive()
             responses = []
+            unique_sessions = {}
             for request in payload:
-                method, args, ref = self.parse(request)
-                responses.append(self.execute(method, args, ref))
+                try:
+                    ref = None
+                    session_uuid, auth_token, method, args, ref, version = self.parse(
+                        request)
+                    ctx = RequestCtx(
+                        session=None,
+                        session_uuid=session_uuid,
+                        auth_token=auth_token,
+                        ref=ref,
+                        version=version
+                    )
+                    if session_uuid in unique_sessions:
+                        ctx.session = unique_sessions[session_uuid]
+                    elif session_uuid and auth_token:
+                        ctx.session = self.get_cli_session(
+                            ctx, session_uuid, auth_token)
+                        unique_sessions[session_uuid] = ctx.session
+                    else:
+                        ctx.session = None
+                    responses.append(self.execute(
+                        ctx=ctx,
+                        method=method,
+                        args=args
+                    ))
+                except RequestParseError as exception:
+                    error_ref = ref or str(uuid.uuid4())
+                    logging.error(
+                        'Service error while parsing request: {} {}'
+                        .format(error_ref, exception), exc_info=1)
+                    responses.append(dict(error=str(exception)))
+
+                except AuthenticateError as exception:
+                    error_ref = ref or str(uuid.uuid4())
+                    logging.error(
+                        'Service error while authenticating request: {} {}'
+                        .format(error_ref, exception), exc_info=1)
+                    responses.append(dict(ref=ref, error=str(exception)))
+
+                except Exception as exception:
+                    error_ref = ref or str(uuid.uuid4())
+                    logging.error(
+                        'Service error while excuting request: {} {}'
+                        .format(error_ref, exception), exc_info=1)
+                    responses.append(dict(ref=ref, error=str(exception)))
+
+            for session in unique_sessions.values():
+                i = 0
+                try:
+                    while i < 10:
+                        qctx = session.queue.get_nowait()
+                        response = dict(ref=qctx.ref)
+                        try:
+                            response['error'] = qctx.error
+                        except AttributeError:
+                            response['result'] = qctx.result
+                        except AttributeError:
+                            pass
+                        if qctx.get('content_type'):
+                            response['content_type'] = ctx.content_type
+                        responses.append(response)
+                        i += 1
+                except Queue.Empty:
+                    continue
+                except Exception as exception:
+                    error_ref = ref or str(uuid.uuid4())
+                    logging.error(
+                        'Service error while excuting request: {} {}'
+                        .format(error_ref, exception), exc_info=1)
+                    responses.append(dict(ref=ref, error=str(exception)))
+                    continue
 
         except AuthenticateError as exception:
+            error_ref = str(uuid.uuid4())
+            error_msg = 'Service error while authenticating request: {} {}'
             logging.error(
-                'Service error while authenticating request: {}'
-                .format(exception), exc_info=1)
+                error_msg.format(error_ref, exception), exc_info=1)
 
         except AuthenticatorInvalidSignature as exception:
+            error_ref = str(uuid.uuid4())
+            error_msg = 'Service error while authenticating request: {} {}'
             logging.error(
-                'Service error while authenticating request: {}'
-                .format(exception), exc_info=1)
+                error_msg.format(error_ref, exception), exc_info=1)
 
         except DecodeError as exception:
+            error_ref = str(uuid.uuid4())
+            error_msg = 'Service error while decoding request: {} {}'
             logging.error(
-                'Service error while decoding request: {}'
-                .format(exception), exc_info=1)
+                error_msg.format(error_msg, exception), exc_info=1)
 
         except RequestParseError as exception:
+            error_ref = str(uuid.uuid4())
+            error_msg = 'Service error while parsing request: {} {}'
             logging.error(
-                'Service error while parsing request: {}'
-                .format(exception), exc_info=1)
+                error_msg.format(error_msg, exception), exc_info=1)
 
         else:
             logging.debug('Service received payload: {}'.format(payload))
@@ -124,7 +240,7 @@ class Responder(Endpoint, Process):
         if responses:
             self.send(responses)
         else:
-            self.send('')
+            self.send([dict(error=error_msg)])
 
 
 class Requester(Endpoint):
@@ -133,8 +249,10 @@ class Requester(Endpoint):
     # pylint: disable=too-many-arguments
     # pylint: disable=no-member
     def __init__(self, address, encoder=None, authenticator=None,
-                 socket=None, bind=False, timeouts=(None, None)):
-
+                 socket=None, bind=False, timeouts=(None, None),
+                 session_uuid=None, auth_token=None):
+        self.session_uuid = session_uuid
+        self.auth_token = auth_token
         # Defaults
         socket = socket or nanomsg.Socket(nanomsg.REQ)
         encoder = encoder or MsgPackEncoder()
@@ -143,19 +261,31 @@ class Requester(Endpoint):
             socket, address, bind, encoder, authenticator, timeouts)
 
     @classmethod
-    def build_payload(cls, method, args):
+    def build_payload(cls, session_uuid, auth_token, method, args):
         """ Build the payload to be sent to a `Responder` """
         ref = str(uuid.uuid4())
-        return ([(method, args, ref)])
+        return ([(
+            dict(
+                ses=session_uuid,
+                tok=auth_token,
+                ver=1,
+                met=method,
+                arg=args,
+                ref=ref
+            )
+        )])
 
     # pylint: disable=logging-format-interpolation
     def call(self, method, *args):
         """ Make a call to a `Responder` and return the result """
 
-        payload = self.build_payload(method, args)
+        payload = self.build_payload(
+            self.session_uuid, self.auth_token, method, args
+        )
         logging.debug('* Client will send payload: {}'.format(payload))
         self.send(payload)
 
-        res = self.receive()
-        assert payload[0][2] == res[0]['ref']
-        return res[0]['result'], res[0]['error']
+        responses = self.receive()
+        # logging.debug('Responses: {}'.format(responses))
+        assert payload[0]['ref'] == responses[0]['ref']
+        return responses
