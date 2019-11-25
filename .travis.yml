@@ -28,11 +28,10 @@ install:
   - ctest -C Debug .
   - sudo cmake --build . --target install
   - sudo ldconfig && popd
+  - pip install tox-travis
 
 before_script: make install
 
 # command to run tests, e.g. python setup.py test
 script:
-  - nosetests test/
-  - nosetests test2/
-
+  - tox
