@@ -43,14 +43,14 @@ setup(
         'nose',
     ],
     dependency_links=[
-        'git+https://github.com/tonysimpson/nanomsg-python.git@master#egg=nanomsg',
+        'git+https://github.com/sarnold/nanomsg-python.git@master#egg=nanomsg',
     ],
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
