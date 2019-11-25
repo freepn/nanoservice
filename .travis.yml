@@ -32,4 +32,7 @@ install:
 before_script: make install
 
 # command to run tests, e.g. python setup.py test
-script: LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib make test
+script:
+  - nosetests test/
+  - nosetests test2/
+
