@@ -15,6 +15,7 @@ help:
 
 test:
 	@nosetests test  # --nologcapture
+	@nosetests test2
 
 install:
 	@python setup.py install
