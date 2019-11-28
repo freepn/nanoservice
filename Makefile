@@ -15,6 +15,7 @@ help:
 
 test:
 	@nosetests test  # --nologcapture
+	sleep 5
 	@nosetests test2
 
 install:
