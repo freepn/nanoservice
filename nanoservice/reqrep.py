@@ -36,7 +36,11 @@ from .encoder import MsgPackEncoder
 from .core import Endpoint
 from .core import Process
 import threading
-import Queue
+
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 
 lock = threading.Lock()
 
@@ -200,7 +204,7 @@ class Responder(Endpoint, Process):
                             response['content_type'] = ctx.content_type
                         responses.append(response)
                         i += 1
-                except Queue.Empty:
+                except queue.Empty:
                     continue
                 except Exception as exception:
                     error_ref = ref or str(uuid.uuid4())

@@ -21,10 +21,10 @@ class BaseTestCase(unittest.TestCase):
 class TestClient(BaseTestCase):
 
     def test_build_payload(self):
-        payload = self.client.build_payload('echo', 'My Name')
-        method, args, ref = payload
-        self.assertTrue(method == 'echo')
-        self.assertTrue(len(payload) == 3)
+        payload = self.client.build_payload(None, None, 'echo', 'My Name')
+        #print(payload[0]['met'])
+        self.assertTrue(payload[0]['met'] == 'echo')
+        self.assertTrue(len(payload) == 1)
 
     def test_encoder(self):
         data = {'name': 'Joe Doe'}
@@ -35,13 +35,15 @@ class TestClient(BaseTestCase):
     def test_call_wo_receive(self):
         # Requester side ops
         method, args = 'echo', 'hello world'
-        payload = self.client.build_payload(method, args)
+        payload = self.client.build_payload(None, None, method, args)
         self.client.socket.send(self.client.encode(payload))
         # Responder side ops
-        method, args, ref = self.service.receive()
+        response = self.service.receive()
+        #print(response)
+        method, args, ref = response[0]['met'], response[0]['arg'], response[0]['ref']
         self.assertEqual(method, 'echo')
         self.assertEqual(args, 'hello world')
-        self.assertEqual(ref, payload[2])
+        self.assertEqual(ref, payload[0]['ref'])
 
     def test_basic_socket_operation(self):
         msg = 'abc'
