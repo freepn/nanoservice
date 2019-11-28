@@ -15,8 +15,7 @@ help:
 
 test:
 	@nosetests test  # --nologcapture
-	sleep 5
-	@nosetests test2
+#	@nosetests test2
 
 install:
 	@python setup.py install
