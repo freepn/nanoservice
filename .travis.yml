@@ -30,8 +30,10 @@ install:
   - sudo ldconfig && popd
   - pip install tox-travis
 
-before_script: make install
+before_script:
+  - make install
+  - export TEST_ARGS="--exclude=test_.*execute"
 
 # command to run tests, e.g. python setup.py test
 script:
-  - make test
+  - nosetests ${TEST_ARGS} test

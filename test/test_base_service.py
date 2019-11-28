@@ -41,14 +41,14 @@ class TestResponder(BaseTestCase):
         got = self.client.encoder.decode(self.client.socket.recv())
         self.assertEqual(sent, got)
 
-    # def test_execute_method_w_success(self):
-        # res = self.service.execute('divide', (6, 2), None)
-        # expected = {'result': 3, 'error': None, 'ref': None}
-        # self.assertEqual(res, expected)
+    def test_execute_method_w_success(self):
+        res = self.service.execute('divide', (6, 2), None)
+        expected = {'result': 3, 'error': None, 'ref': None}
+        self.assertEqual(res, expected)
 
-    # def test_execute_method_w_error(self):
-        # res = self.service.execute('divide', (1, 0), None)
-        # self.assertIsNotNone(res['error'])
+    def test_execute_method_w_error(self):
+        res = self.service.execute('divide', (1, 0), None)
+        self.assertIsNotNone(res['error'])
 
     def test_encoder(self):
         data = {'name': 'Joe Doe'}
