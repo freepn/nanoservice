@@ -32,8 +32,8 @@ install:
 
 before_script:
   - make install
-  - export TEST_ARGS="--exclude=test_.*execute"
+#  - export TEST_ARGS="--exclude=test_.*execute"
 
 # command to run tests, e.g. python setup.py test
 script:
-  - nosetests ${TEST_ARGS} test
+  - nosetests ${TEST_ARGS} test test2

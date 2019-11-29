@@ -27,19 +27,19 @@ class TestTCPProtocol(BaseTestCase):
         proc = Process(target=self.start_service, args=(self.addr,))
         proc.start()
         self.client = Requester(self.addr, timeouts=(3000, 3000))
-        res, err = self.client.call('divide', *args)
+        res = self.client.call('divide', *args)
         proc.terminate()
-        return res, err
+        return res
 
     def test_req_rep_w_success(self):
-        res, err = self.make_req(6, 2)
-        self.assertEqual(3, res)
-        self.assertTrue(err is None)
+        res = self.make_req(6, 2)
+        #print(res)
+        self.assertEqual(3.0, res[0]['result'])
 
     def test_req_rep_w_error(self):
-        res, err = self.make_req(6, 0)
-        self.assertTrue(res is None)
-        self.assertTrue(err is not None)
+        res = self.make_req(6, 0)
+        #print(res)
+        self.assertIsNotNone(res[0]['error'])
 
 
 class TestAuthentication(BaseTestCase):
@@ -51,14 +51,14 @@ class TestAuthentication(BaseTestCase):
         proc.start()
         self.client = Requester(
             self.addr, authenticator=auth, timeouts=(3000, 3000))
-        res, err = self.client.call('divide', *args)
+        res = self.client.call('divide', *args)
         proc.terminate()
-        return res, err
+        return res
 
     def test_req_rep_w_success(self):
-        res, err = self.make_req(12, 2)
-        self.assertEqual(6, res)
-        self.assertTrue(err is None)
+        res = self.make_req(12, 2)
+        #print(res)
+        self.assertEqual(6.0, res[0]['result'])
 
 
 class TestErrors(BaseTestCase):
@@ -73,7 +73,7 @@ class TestErrors(BaseTestCase):
         self.client.encoder = encoder.JSONEncoder()
 
         # Build and send payload to service to trigger decoding
-        payload = self.client.build_payload('divide', args)
+        payload = self.client.build_payload(None, 'divide', *args)
         self.client.send(payload)
 
         # Change back to msg pack encoder to read the service response
@@ -84,9 +84,10 @@ class TestErrors(BaseTestCase):
         return out
 
     def test_decode_error(self):
+        # response now returns either error msg or result
         out = self.make_req(6, 2)
-        # response shoud be empty since there was a decode error
-        self.assertEqual('', out)
+        #print(out)
+        self.assertIsNotNone(out[0]['error'])
 
 
 if __name__ == '__main__':

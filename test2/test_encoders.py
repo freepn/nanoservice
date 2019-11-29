@@ -1,4 +1,5 @@
 import hashlib
+import logging
 from multiprocessing import Process
 
 from nanoservice import Responder
@@ -8,7 +9,12 @@ from nanoservice import Authenticator
 
 
 def check(res, expected):
-    assert res == expected
+    if 'result' in res:
+        chk_res = res['result']
+    else:
+        # there is no result for the ``none`` method so we fake it
+        chk_res = None
+    assert chk_res == expected
 
 
 def start_service(addr, encoder, authenticator=None):
@@ -62,8 +68,8 @@ def test_encoding():
                     authenticator=authenticator, timeouts=(3000, 3000))
 
                 # Test
-                res, err = client.call(method, *args)
+                res = client.call(method, *args)
                 client.socket.close()
                 proc.terminate()
-                yield check, res, expected
+                yield check, res[0], expected
                 # self.assertEqual(expected, res)
