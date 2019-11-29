@@ -36,5 +36,6 @@ before_script:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - tox
-#  - nosetests test test2
+#  - tox
+  - nosetests test
+  - nosetests test2
