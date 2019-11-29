@@ -94,7 +94,7 @@ class Responder(Endpoint, Process):
             error = 'Method `{}` not found'.format(method)
         else:
             try:
-                result = fun(ctx, *args)
+                result = fun(*args)
             except Exception as exception:
                 logging.error(
                     'Request {} exception {}'.format(ctx.ref, exception), exc_info=1)

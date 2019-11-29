@@ -24,6 +24,7 @@ class TestClient(BaseTestCase):
         payload = self.client.build_payload(None, None, 'echo', 'My Name')
         #print(payload[0]['met'])
         self.assertTrue(payload[0]['met'] == 'echo')
+        self.assertTrue(payload[0]['arg'] == 'My Name')
         self.assertTrue(len(payload) == 1)
 
     def test_encoder(self):

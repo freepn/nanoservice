@@ -1,10 +1,12 @@
 import unittest
+import uuid
 
 from nanoservice import Responder
 from nanoservice import Requester
 
 from nanoservice import error
 from nanoservice import crypto
+from nanoservice.reqrep import RequestCtx
 
 
 class BaseTestCase(unittest.TestCase):
@@ -41,13 +43,52 @@ class TestResponder(BaseTestCase):
         got = self.client.encoder.decode(self.client.socket.recv())
         self.assertEqual(sent, got)
 
+    def test_exec_echo_success(self):
+        ref = str(uuid.uuid4())
+        ctx = RequestCtx(
+            session=None,
+            session_uuid=None,
+            auth_token=None,
+            ref=ref,
+            version=3
+        )
+        #print(ctx)
+        method, args = 'echo', ['hello world']
+        res = self.service.execute(ctx, method, args)
+        print(res['result'])
+        self.assertTrue(res['result'] == 'hello world')
+
     def test_execute_method_w_success(self):
-        res = self.service.execute('divide', (6, 2), None)
-        expected = {'result': 3, 'error': None, 'ref': None}
+        ref = str(uuid.uuid4())
+        ctx = RequestCtx(
+            session=None,
+            session_uuid=None,
+            auth_token=None,
+            ref=ref,
+            version=1
+        )
+        #print(ctx)
+        res = self.service.execute(ctx, 'divide', (6, 2))
+        print(res['result'])
+        expected = {'ref': ref, 'result': 3.0}
+        #print(expected)
         self.assertEqual(res, expected)
 
     def test_execute_method_w_error(self):
-        res = self.service.execute('divide', (1, 0), None)
+        method = 'divide'
+        args = (1, 0)
+        ref = str(uuid.uuid4())
+        res = {}
+        ctx = RequestCtx(
+            session=None,
+            session_uuid=None,
+            auth_token=None,
+            ref=ref,
+            version=2
+        )
+        #print(ctx)
+        res = self.service.execute(ctx, method, args)
+        print(res['error'])
         self.assertIsNotNone(res['error'])
 
     def test_encoder(self):
