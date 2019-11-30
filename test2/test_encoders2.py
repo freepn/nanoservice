@@ -31,7 +31,7 @@ def start_service(addr, encoder, authenticator=None):
 
 
 # ------------------
-
+# Test Data
 
 TESTS = [
     (('divide', [10, 2]), 5.0),
@@ -39,20 +39,18 @@ TESTS = [
     (('upper', [{'a': 'a'}]), {'a': 'A'})
 ]
 
+authenticators = [
+    None,
+    Authenticator('my-secret', hashlib.sha256)]
+
+encoders = [
+    encoder.JSONEncoder(),
+    encoder.MsgPackEncoder(),
+    encoder.PickleEncoder()]
+
 
 def create_test_cases_encoding():
     """ Create test cases for encoding with different options """
-
-    seen = set()
-
-    authenticators = [
-        None,
-        Authenticator('my-secret', hashlib.sha256)]
-
-    encoders = [
-        encoder.JSONEncoder(),
-        encoder.MsgPackEncoder(),
-        encoder.PickleEncoder()]
 
     for test, expected in TESTS:
         for enc in encoders:
