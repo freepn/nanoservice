@@ -68,7 +68,7 @@ class MsgPackEncoder(Encoder):
         return msgpack.packb(data, use_bin_type=True)
 
     def decode(self, data):
-        return msgpack.unpackb(data, encoding='utf-8')
+        return msgpack.unpackb(data, raw=False)
 
 
 class PickleEncoder(Encoder):
