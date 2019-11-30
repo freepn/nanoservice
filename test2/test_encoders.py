@@ -7,6 +7,8 @@ from nanoservice import Requester
 from nanoservice import encoder
 from nanoservice import Authenticator
 
+import pytest
+
 
 def check(res, expected):
     if 'result' in res:
@@ -29,7 +31,7 @@ def start_service(addr, encoder, authenticator=None):
 
 
 # ------------------
-
+# Test Data
 
 TESTS = [
     (('divide', [10, 2]), 5.0),
@@ -37,39 +39,44 @@ TESTS = [
     (('upper', [{'a': 'a'}]), {'a': 'A'})
 ]
 
+authenticators = [
+    None,
+    Authenticator('my-secret', hashlib.sha256)]
 
-def test_encoding():
-    """ Test encoding with defferent options """
-    address = 'ipc:///tmp/test-encoders.sock'
+encoders = [
+    encoder.JSONEncoder(),
+    encoder.MsgPackEncoder(),
+    encoder.PickleEncoder()]
 
-    authenticators = [
-        None,
-        Authenticator('my-secret', hashlib.sha256)]
 
-    encoders = [
-        encoder.JSONEncoder(),
-        encoder.MsgPackEncoder(),
-        encoder.PickleEncoder()]
+def create_test_cases_encoding():
+    """ Create test cases for encoding with different options """
 
     for test, expected in TESTS:
         for enc in encoders:
             for authenticator in authenticators:
                 method, args = test
+                yield authenticator, enc, method, args, expected
 
-                # Start process
-                proc = Process(
-                    target=start_service,
-                    args=(address, enc, authenticator))
-                proc.start()
 
-                # Create client
-                client = Requester(
-                    address, encoder=enc,
-                    authenticator=authenticator, timeouts=(3000, 3000))
+@pytest.mark.parametrize('auth,enc,method,args,expected', create_test_cases_encoding())
+def test_encoding(auth, enc, method, args, expected):
+    """ Test encoding using pytest decorator """
+    address = 'ipc:///tmp/test-encoders.sock'
 
-                # Test
-                res = client.call(method, *args)
-                client.socket.close()
-                proc.terminate()
-                yield check, res[0], expected
-                # self.assertEqual(expected, res)
+    # Start process
+    proc = Process(
+        target=start_service,
+        args=(address, enc, auth))
+    proc.start()
+
+    # Create client
+    client = Requester(
+        address, encoder=enc,
+        authenticator=auth, timeouts=(3000, 3000))
+
+    # Test
+    res = client.call(method, *args)
+    client.socket.close()
+    proc.terminate()
+    check(res[0], expected)
