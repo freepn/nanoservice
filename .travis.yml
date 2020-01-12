@@ -1,4 +1,5 @@
 sudo: required
+dist: bionic
 
 language: python
 python:
@@ -10,14 +11,22 @@ python:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y software-properties-common
-  - sudo add-apt-repository -y ppa:nerdboy/embedded
+  - sudo add-apt-repository -y -u ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
-  - sudo apt-get install -y --allow-unauthenticated build-essential
+  - sudo apt-get install -y --allow-unauthenticated build-essential cmake
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - sudo apt-get install libnanomsg-dev python-msgpack python-nanomsg python-pytest
-  - pip install tox-travis
+  - git clone --quiet --depth=100 "https://github.com/nanomsg/nanomsg.git" ~/builds/nanomsg
+      && pushd ~/builds/nanomsg
+  - export TRAVIS_TAG=$(cat .version)
+  - git checkout -b "${TRAVIS_TAG}"
+  - mkdir build && cd build
+  - cmake ..
+  - cmake --build .
+  - ctest -C Debug .
+  - sudo cmake --build . --target install
+  - sudo ldconfig && popd
+  - pip install tox-travis pathlib2
 
 before_script:
   - make install

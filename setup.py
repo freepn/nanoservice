@@ -2,12 +2,21 @@
 
 https://github.com/walkr/nanoservice
 """
-
-#!/usr/bin/env python
-
 import sys
 
-from setuptools import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+
+NANOSERVICE_VERSION = '0.7.2'
+# try making setuptools happy with PEP 440-compliant post version
+# REL_TAG = NANOSERVICE_VERSION.replace('-', 'p')
+
+NANOSERVICE_DOWNLOAD_URL = (
+    'https://github.com/freepn/nanoservice/tarball/' + NANOSERVICE_VERSION
+)
 
 
 def read_long_description(readme_file):
@@ -26,9 +35,10 @@ def read_long_description(readme_file):
     else:
         return pypandoc.convert(readme_file, 'rst')
 
+
 setup(
     name='nanoservice',
-    version='0.7.2',
+    version=NANOSERVICE_VERSION,
     packages=['nanoservice'],
     author='Tony Walker',
     author_email='walkr.walkr@gmail.com',
@@ -37,9 +47,14 @@ setup(
     description='nanoservice is a small Python library for '
                 'writing lightweight networked services using nanomsg',
     long_description=read_long_description('README.md'),
+    download_url=NANOSERVICE_DOWNLOAD_URL,
     install_requires=[
         'msgpack-python',
-        'nanomsg @ git+https://github.com/freepn/nanomsg-python@1.0.2p1',
+        'nose',
+        'nanomsg @ git+https://github.com/freepn/nanomsg-python@master',
+    ],
+    dependency_links=[
+        'git+https://github.com/freepn/nanomsg-python.git@master#egg=nanomsg',
     ],
     classifiers=[
         'License :: OSI Approved :: MIT License',

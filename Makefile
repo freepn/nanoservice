@@ -1,4 +1,4 @@
-.PHONY: help test
+.PHONY: help test fix
 
 help:
 	@echo
@@ -15,6 +15,9 @@ help:
 
 test:
 	@nosetests test  # --nologcapture
+
+fix:
+	@sed -e "/nanomsg @/d" -i setup.py
 
 install:
 	@python setup.py install
