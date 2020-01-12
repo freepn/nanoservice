@@ -39,11 +39,7 @@ setup(
     long_description=read_long_description('README.md'),
     install_requires=[
         'msgpack-python',
-        'nanomsg',
-        'nose',
-    ],
-    dependency_links=[
-        'git+https://github.com/sarnold/nanomsg-python.git@master#egg=nanomsg',
+        'nanomsg @ git+https://github.com/freepn/nanomsg-python@1.0.2p1',
     ],
     classifiers=[
         'License :: OSI Approved :: MIT License',
