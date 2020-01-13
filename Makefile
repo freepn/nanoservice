@@ -14,7 +14,7 @@ help:
 	@echo
 
 test:
-	@nosetests test  # --nologcapture
+	@tox
 
 fix:
 	@sed -e "/nanomsg @/d" -i setup.py

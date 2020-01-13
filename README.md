@@ -10,7 +10,12 @@ specialized services which communicate with each other.
 
 ## Install
 
-1) Make sure you have the nanomsg library installed:
+1) Make sure you have the nanomsg library installed.
+
+For Gentoo use the package available in portage: dev-libs/nanomsg.  There is also
+a Launchpad PPA with packages built for [Ubuntu xenial](https://launchpad.net/~nerdboy/+archive/ubuntu/embedded)
+
+If no packages are available for your Linux platform, install manually:
 
 ```shell
 $ git clone git@github.com:nanomsg/nanomsg.git
@@ -30,7 +35,10 @@ $ brew install nanomsg
 
 2) Install nanoservice:
 
-From project directory
+On Gentoo you can use this [portage overlay](https://github.com/sarnold/portage-overlay)
+or try the PPA above for Xenial, Stretch, etc.
+
+Alternatively, from project directory:
 
 ```shell
 $ make install
@@ -81,7 +89,7 @@ $ Result is: hello world
 
 ## Other
 
-To run tests:
+To run tests, first install tox (see Testing Notes below) then run:
 
 ```shell
 $ make test
@@ -94,5 +102,16 @@ $ make bench
 ```
 
 Check out examples directory for more examples.
+
+## Testing Notes
+
+Tests using python multiprocessing have been separated out into their own
+directory (`test2`) due to sporadic failures triggering NanoMsgAPIError
+exceptions, `Address already in use` followed by `Connection timed out`
+(the unittest-based tests are still under the `test` directory).
+
+Although random failures are occasionally seen in travis-ci tests, all
+tests *should* run successfully with tox and pytest on the desktop as well
+as package builds (ie, using FEATURES="test" in portage).
 
 MIT Licensed
