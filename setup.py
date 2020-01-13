@@ -49,8 +49,7 @@ setup(
     long_description=read_long_description('README.md'),
     download_url=NANOSERVICE_DOWNLOAD_URL,
     install_requires=[
-        'msgpack-python',
-        'nose',
+        'msgpack',
         'nanomsg @ git+https://github.com/freepn/nanomsg-python@master',
     ],
     dependency_links=[
