@@ -33,7 +33,21 @@ On OS X you can also do:
 $ brew install nanomsg
 ```
 
-2) Install nanoservice:
+2) Install the correct version of msgpack and remove old pkg if needed;
+note the name change upstream has a "transitional" package so when
+upgrading from msgpack-0.4 or earlier, don’t do ``pip install -U msgpack-python``.
+
+If upgrading as above, do:
+
+```shell
+$ pip uninstall msgpack-python; pip install msgpack
+```
+Otherwise just:
+```shell
+$ pip install msgpack
+```
+
+3) Install nanoservice:
 
 On Gentoo you can use this [portage overlay](https://github.com/sarnold/portage-overlay)
 or try the PPA above for Xenial, Stretch, etc.

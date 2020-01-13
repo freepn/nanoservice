@@ -10,12 +10,12 @@ except ImportError:
     from distutils.core import setup
 
 
-NANOSERVICE_VERSION = '0.7.2'
+NANOSERVICE_VERSION = '0.7.2-1'
 # try making setuptools happy with PEP 440-compliant post version
-# REL_TAG = NANOSERVICE_VERSION.replace('-', 'p')
+REL_TAG = NANOSERVICE_VERSION.replace('-', 'p')
 
 NANOSERVICE_DOWNLOAD_URL = (
-    'https://github.com/freepn/nanoservice/tarball/' + NANOSERVICE_VERSION
+    'https://github.com/freepn/nanoservice/tarball/' + REL_TAG
 )
 
 
