@@ -1,5 +1,6 @@
 """Main module for nanoservice"""
 
+import logging
 
 from nanoservice.reqrep import Requester, Responder
 from nanoservice.pubsub import Subscriber, Publisher
@@ -30,8 +31,6 @@ __all__ = [
 ######################################################################
 # Emit warnings for deprecated components
 ######################################################################
-
-import logging
 
 
 class Service(Responder):

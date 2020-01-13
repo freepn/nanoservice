@@ -101,9 +101,9 @@ class Responder(Endpoint, Process):
                 error = str(exception)
         response = dict(ref=ctx.ref)
         if error:
-           response['error'] = error
+            response['error'] = error
         elif result:
-           response['result'] = result
+            response['result'] = result
         if ctx.get('queued'):
             response['queued'] = True
         if ctx.get('content_type'):
