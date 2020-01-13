@@ -56,8 +56,8 @@ setup(
         'git+https://github.com/freepn/nanomsg-python.git@master#egg=nanomsg',
     ],
     classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
