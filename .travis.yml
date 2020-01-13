@@ -26,7 +26,9 @@ install:
   - ctest -C Debug .
   - sudo cmake --build . --target install
   - sudo ldconfig && popd
-  - pip install tox-travis pathlib2
+  - pip install -U pip
+  - pip install -U pytest
+  - pip install -U tox-travis
 
 before_script:
   - make install
