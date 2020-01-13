@@ -39,3 +39,8 @@ before_script:
 # command to run tests, e.g. python setup.py test
 script:
   - tox
+
+matrix:
+  fast_finish: false
+  allow_failures:
+    - python: "nightly"
