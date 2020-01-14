@@ -92,10 +92,7 @@ $ pip install nanoservice (it's broken)
 Example Usage
 =============
 
-The service:
-
-.. code:: python
-   :number-lines:
+The service::
 
   from nanoservice import Responder
 
@@ -112,10 +109,7 @@ The service:
   $ python echo_service.py
 
 
-The client:
-
-.. code:: python
-   :number-lines:
+The client::
 
   from nanoservice import Requester
 
