@@ -35,7 +35,8 @@ each other.
 Install
 =======
 
-1) Make sure you have the nanomsg library installed.
+Make sure you have the nanomsg library installed
+------------------------------------------------
 
 For Gentoo use the package available in portage: dev-libs/nanomsg.
 There is also a Launchpad PPA with packages built for `Ubuntu xenial`_.
@@ -58,7 +59,8 @@ On OS X you can also do::
     $ brew install nanomsg
 
 
-2) Install the correct version of msgpack and remove old pkg if needed.
+Install the correct version of msgpack
+--------------------------------------
 
 Note the name change upstream has a "transitional" package so when
 upgrading from msgpack-0.4 or earlier, don’t do ``pip install -U msgpack-python``.
@@ -72,7 +74,8 @@ Otherwise just do::
     $ pip install msgpack
 
 
-3) Install nanoservice.
+Install nanoservice
+-------------------
 
 On Gentoo you can use this `portage overlay`_ otherwise try the PPA
 above for Ubuntu xenial, Debian stretch, etc.
@@ -92,7 +95,9 @@ $ pip install nanoservice (it's broken)
 Example Usage
 =============
 
-The service::
+The service:
+
+.. code::
 
   from nanoservice import Responder
 
@@ -109,7 +114,9 @@ The service::
   $ python echo_service.py
 
 
-The client::
+The client:
+
+.. code::
 
   from nanoservice import Requester
 
