@@ -2,7 +2,7 @@
 
 from nanoservice import Requester
 
-c = Requester('ipc:///tmp/service.sock')
+c = Requester('ipc:///tmp/service.sock', timeouts=(None, None))
 
 res, err = c.call('greet', 'John Doe')
 print('Greeting: {}'.format(res))

@@ -31,6 +31,9 @@ each other.
     :target: https://github.com/freepn/nanoservice/issues?q=is:open+is:pr
     :alt: Pull Requests
 
+.. image:: https://img.shields.io/codeclimate/maintainability/freepn/nanoservice
+    :target: https://codeclimate.com/github/freepn/nanoservice
+    :alt: Code Climate maintainability
 
 Install
 =======
@@ -61,6 +64,9 @@ On OS X you can also do::
 
 Install the correct version of msgpack
 --------------------------------------
+
+On Gentoo you can use this `portage overlay`_ otherwise try the PPA
+above for Ubuntu xenial, Debian stretch, etc.
 
 Note the name change upstream has a "transitional" package so when
 upgrading from msgpack-0.4 or earlier, don’t do ``pip install -U msgpack-python``.
@@ -104,7 +110,7 @@ The service:
   def echo(msg):
       return msg
 
-  s = Responder('ipc:///tmp/service.sock')
+  s = Responder('ipc:///tmp/service.sock', timeouts=(None, None))
   s.register('echo', echo)
   s.start()
 
@@ -120,7 +126,7 @@ The client:
 
   from nanoservice import Requester
 
-  c = Requester('ipc:///tmp/service.sock')
+  c = Requester('ipc:///tmp/service.sock', timeouts=(None, None))
   res, err = c.call('echo', 'hello world’)
   print('Result is {}'.format(res))
 
@@ -156,6 +162,6 @@ exceptions, `Address already in use` followed by `Connection timed out`
 
 Although random failures are occasionally seen in travis-ci tests, all
 tests *should* run successfully with tox and pytest on the desktop as well
-as package builds (ie, using FEATURES="test" in portage).
+as package builds (ie, using FEATURES="test" in portage with -userpriv).
 
 MIT Licensed

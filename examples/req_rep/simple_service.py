@@ -9,7 +9,7 @@ def greet(name):
 def add(x, y):
     return x + y
 
-s = Responder('ipc:///tmp/service.sock')
+s = Responder('ipc:///tmp/service.sock', timeouts=(None, None))
 s.register('greet', greet)
 s.register('add', add)
 s.start()
