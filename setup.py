@@ -2,7 +2,7 @@
 
 https://github.com/walkr/nanoservice
 """
-import sys
+import codecs
 
 try:
     from setuptools import setup
@@ -19,21 +19,12 @@ NANOSERVICE_DOWNLOAD_URL = (
 )
 
 
-def read_long_description(readme_file):
-    """ Read package long description from README file """
-    try:
-        import pypandoc
-    except (ImportError, OSError) as exception:
-        print('No pypandoc or pandoc: %s' % (exception,))
-        if sys.version_info.major == 3:
-            handle = open(readme_file, encoding='utf-8')
-        else:
-            handle = open(readme_file)
-        long_description = handle.read()
-        handle.close()
-        return long_description
-    else:
-        return pypandoc.convert(readme_file, 'rst')
+def read_file(filename):
+    """
+    Read a utf8 encoded text file and return its contents.
+    """
+    with codecs.open(filename, 'r', 'utf8') as f:
+        return f.read()
 
 
 setup(
@@ -46,7 +37,7 @@ setup(
     license='MIT',
     description='nanoservice is a small Python library for '
                 'writing lightweight networked services using nanomsg',
-    long_description=read_long_description('README.md'),
+    long_description=read_file('README.rst'),
     download_url=NANOSERVICE_DOWNLOAD_URL,
     install_requires=[
         'msgpack',
