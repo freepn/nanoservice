@@ -31,6 +31,10 @@ each other.
     :target: https://github.com/freepn/nanoservice/issues?q=is:open+is:pr
     :alt: Pull Requests
 
+.. image:: https://img.shields.io/codecov/c/github/freepn/nanoservice
+    :target: https://codecov.io/gh/freepn/nanoservice
+    :alt: Codecov
+
 .. image:: https://img.shields.io/codeclimate/maintainability/freepn/nanoservice
     :target: https://codeclimate.com/github/freepn/nanoservice
     :alt: Code Climate maintainability
