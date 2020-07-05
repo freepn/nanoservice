@@ -46,9 +46,10 @@ Make sure you have the nanomsg library installed
 ------------------------------------------------
 
 For Gentoo use the package available in portage: dev-libs/nanomsg.
-There is also a Launchpad PPA with packages built for `Ubuntu xenial`_.
+There is also a Launchpad PPA with packages built for `Ubuntu`_ 
+LTS releases: xenial, bionic, and focal.
 
-.. _Ubuntu xenial: https://launchpad.net/~nerdboy/+archive/ubuntu/embedded
+.. _Ubuntu: https://launchpad.net/~nerdboy/+archive/ubuntu/embedded
 
 If no packages are available for your Linux platform, install manually::
 
@@ -69,8 +70,9 @@ On OS X you can also do::
 Install the correct version of msgpack
 --------------------------------------
 
-On Gentoo you can use this `portage overlay`_ otherwise try the PPA
-above for Ubuntu xenial, Debian stretch, etc.
+On Gentoo you can use this `portage overlay`_ otherwise install it from the
+usual Ubuntu repos (or use the PPA above for a xenial backport, still named
+python3-msgpack).
 
 Note the name change upstream has a "transitional" package so when
 upgrading from msgpack-0.4 or earlier, don’t do ``pip install -U msgpack-python``.
@@ -87,8 +89,8 @@ Otherwise just do::
 Install nanoservice
 -------------------
 
-On Gentoo you can use this `portage overlay`_ otherwise try the PPA
-above for Ubuntu xenial, Debian stretch, etc.
+On Gentoo you can use this `portage overlay`_ otherwise use the PPA
+above for Ubuntu.
 
 .. _portage overlay: https://github.com/sarnold/portage-overlay
 
