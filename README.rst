@@ -19,9 +19,9 @@ each other.
     :target: https://github.com/freepn/nanoservice/releases
     :alt: GitHub tag (latest SemVer pre-release)
 
-.. image:: https://travis-ci.org/freepn/nanoservice.svg?branch=master
-    :target: https://travis-ci.org/freepn/nanoservice
-    :alt: Build Status
+.. image:: https://img.shields.io/github/workflow/status/freepn/nanoservice/ci
+    :target: https://github.com/freepn/nanoservice/actions?query=workflow:ci
+    :alt: GitHub CI Build Status
 
 .. image:: https://img.shields.io/github/issues/freepn/nanoservice
     :target: https://github.com/freepn/nanoservice/issues?q=is:issue+is:open
