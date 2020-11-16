@@ -27,6 +27,8 @@ __all__ = [
     'DecodeError', 'AuthenticateError'
 ]
 
+__version__ = '0.7.2-2'
+
 
 ######################################################################
 # Emit warnings for deprecated components
