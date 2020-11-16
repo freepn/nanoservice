@@ -1,6 +1,17 @@
 Changelog
 =========
 
+### 0.7.2-2
+
+* Convert to PEP 517/518 project format
+* Migrate travis CI to github
+* Limit CI to Python 3.6 - 3.9 on focal and macos
+
+### 0.7.2p1
+
+* Pull in enhancements from Jan Bos fork
+* Minor integration and test cleanup
+
 
 ### 0.7.2
 
