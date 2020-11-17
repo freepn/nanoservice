@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 0.7.2-3
+
+* fix overly aggressive find packages
+
 ### 0.7.2-2
 
 * Convert to PEP 517/518 project format
